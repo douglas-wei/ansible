@@ -1,0 +1,42 @@
+- name: install the latest version of rpcbind nfs-utils
+  yum:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+    - rpcbind
+    - nfs-utils
+
+- name: Add the user nfs
+  user:
+    name: '{{ nfs_user }}'
+    uid: '{{ nfs_uid }}'
+    shell: /sbin/nologin
+    create_home: no
+    append: yes
+- name: example template exports
+  template:
+    src: exports.j2
+    dest: /etc/exports
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart nfs
+- name: create nfs_dir
+  file:
+    path: '{{ nfs_dir }}'
+    state: directory
+    owner: '{{ nfs_user }}'
+    group: '{{ nfs_user }}'
+    mode: 0755
+- name: Start service rpcbind , if not started
+  service:
+    name: rpcbind
+    state: started
+    enabled: yes
+- name: Start service nfs , if not started
+  service:
+    name: nfs
+    state: started
+    enabled: yes

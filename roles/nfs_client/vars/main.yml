@@ -1,0 +1,2 @@
+mount_dir: /mnt
+nfs_src: 172.16.1.31:/data

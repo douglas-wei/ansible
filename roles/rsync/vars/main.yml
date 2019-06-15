@@ -1,0 +1,3 @@
+rsync_user: linux
+rsync_group: linux
+rsync_uid: 1025

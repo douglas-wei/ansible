@@ -1,0 +1,14 @@
+- name: install the latest version of rpcbind nfs-utils
+  yum:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+    - rpcbind
+    - nfs-utils
+- name: mount
+  mount:
+    path: '{{ mount_dir }}'
+    src: '{{ nfs_src }}'
+    fstype: nfs
+    state: mounted
