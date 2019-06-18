@@ -9,31 +9,10 @@
     owner: root
     group: root
     mode: 0600
-#- name: Add the user 'rsync'
-#  user:
-#    name: '{{ rsync_user }}'
-#    uid: '{{ rsync_uid }}'
-#    shell: /sbin/nologin
-#    create_home: no
-#    append: yes
-#- name: example copying rsyncd.conf
-#  template:
-#    src: rsyncd.conf.j2
-#    dest: /etc/rsyncd.conf
-#    owner: root
-#    group: root
-#    mode: 0644
-#  notify:
-#    - restart rsync
-#- name: create /backup
-#  file:
-#    path: /backup
-#    state: directory
-#    owner: '{{ rsync_user }}'
-#    group: '{{ rsync_group }}'
-#    mode: 0755
-#- name: Start service rsync, if not started
-#  service:
-#    name: rsyncd
-#    state: started
-#    enabled: yes
+- name: Add nginx Yum Repository
+  yum_repository:
+    name: nginx-stable
+    description: nginx-stable Repository
+    baseurl: http://nginx.org/packages/centos/$releasever/$basearch/
+    gpgcheck: yes
+    gpgkey: https://nginx.org/keys/nginx_signing.key

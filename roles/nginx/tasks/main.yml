@@ -1,11 +1,4 @@
-- name: Add nginx Yum Repository 添加nginx yum 源
-  yum_repository:
-    name: nginx-stable
-    description: nginx-stable Repository
-    baseurl: http://nginx.org/packages/centos/$releasever/$basearch/
-    gpgcheck: yes
-    gpgkey: https://nginx.org/keys/nginx_signing.key
-- name: install nginx  
+- name: install nginx
   yum:
     name: nginx
     state: latest
