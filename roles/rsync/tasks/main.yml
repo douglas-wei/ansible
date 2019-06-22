@@ -27,7 +27,7 @@
     mode: 0600
 - name: create /backup
   file:
-    path: /backup
+    path: '{{ rsync_dir }}'
     state: directory
     owner: '{{ rsync_user }}'
     group: '{{ rsync_group }}'

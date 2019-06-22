@@ -15,4 +15,4 @@ hosts allow = 172.16.1.0/24
 auth users = rsync_backup
 secrets file = /etc/rsync.password
 [backup]
-path = /backup
+path = {{ rsync_dir }}
