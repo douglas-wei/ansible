@@ -420,7 +420,7 @@ ansible oldboy -m copy -a "src=/etc/hosts dest=/mnt backup=yes"
 ```
 backup=yes  备份
 # Example from Ansible Playbooks
-```
+```yml
 - copy:
     src: /srv/myfiles/foo.conf
     dest: /etc/foo.conf
@@ -459,7 +459,7 @@ ansible all -m copy -a 'src=/opt/file1 dest=/opt/file1.bak remote_src=yes'
 ```
 ## template
 [https://docs.ansible.com/ansible/latest/modules/template_module.html#template-module](https://docs.ansible.com/ansible/latest/modules/template_module.html#template-module)
-```
+```yml
 # Example from Ansible Playbooks
 - template:
     src: /mytemplates/foo.j2
@@ -500,7 +500,7 @@ ansible all -m copy -a 'src=/opt/file1 dest=/opt/file1.bak remote_src=yes'
 ```
 ## fetch 模块
 从远程节点获取文件
-```
+```yml
     fetch：
       src： /tmp/uniquefile
       dest： /tmp/special/
@@ -520,7 +520,7 @@ wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-6.repo
 EOF
 ansible oldboy -m script -a "/server/scripts/yuan.sh"
 ```
-```
+```yml
 - name: Run a script with arguments
   script: /some/local/script.sh --some-argument 1234
 
@@ -549,7 +549,7 @@ ansible oldboy -m script -a "/server/scripts/yuan.sh"
 ```
  ansible oldboy -m cron -a 'name=hello minute=*/2 job="echo hello >>/tmp/oldboy.log 2>&1" '
 ```
-```
+```yml
 - name: Ensure a job that runs at 2 and 5 exists. Creates an entry like "0 5,2 * * ls -alh > /dev/null"
   cron:
     name: "check dirs"
@@ -603,9 +603,10 @@ ansible oldboy -m script -a "/server/scripts/yuan.sh"
     env: yes
     state: absent
 ```
+disabled=yes   注释定时任务
 ## mount模块
 [https://docs.ansible.com/ansible/latest/modules/mount_module.html#mount-module](https://docs.ansible.com/ansible/latest/modules/mount_module.html#mount-module)
-```
+```yml
 Control active and configured mount points
 This module controls active and configured mount points in /etc/fstab
 
@@ -633,7 +634,7 @@ This module controls active and configured mount points in /etc/fstab
     opts: noatime
     state: present
 ```
-```
+```yml
     - name: mount
       mount:
         path: /mnt
@@ -643,7 +644,7 @@ This module controls active and configured mount points in /etc/fstab
 ```
 ## file模块
 [https://docs.ansible.com/ansible/latest/modules/file_module.html](https://docs.ansible.com/ansible/latest/modules/file_module.html)
-```
+```yml
 # change file ownership, group and mode
 - file:
     path: /etc/foo.conf
@@ -759,7 +760,7 @@ mv /usr/lib/python2.6/site-packages/ansible/modules/extras/cloud/misc/rhevm.py /
 ```
 ansible oldboy -m yum -a "name=keepalived state=installed"
 ```
-```
+```yml
 - name: install the latest version of Apache
   yum:
     name: httpd
@@ -778,7 +779,7 @@ ansible oldboy -m yum -a "name=keepalived state=installed"
     name: httpd
     state: absent
 ```
-```
+```yml
 - name: install the latest version of Apache from the testing repo
   yum:
     name: httpd
@@ -786,7 +787,7 @@ ansible oldboy -m yum -a "name=keepalived state=installed"
     state: present
 ```
 ## yum_repository模块
-```
+```yml
 - name: Add repository
   yum_repository:
     name: epel
@@ -851,7 +852,7 @@ ansible oldboy -m yum -a "name=keepalived state=installed"
 ```
 ansible oldboy -m service -a "name=crond state=started enabled=yes"
 ```
-```
+```yml
 - name: Start service httpd, if not started
   service:
     name: httpd
@@ -891,7 +892,7 @@ ansible oldboy -m service -a "name=crond state=started enabled=yes"
 ```
 ## systemd
 [https://docs.ansible.com/ansible/latest/modules/systemd_module.html#systemd-module](https://docs.ansible.com/ansible/latest/modules/systemd_module.html#systemd-module)
-```
+```yml
 - name: Make sure a service is running
   systemd:
     state: started
@@ -935,7 +936,7 @@ ansible oldboy -m service -a "name=crond state=started enabled=yes"
 ```
 ## user模块
 [https://docs.ansible.com/ansible/latest/modules/user_module.html#user-module](https://docs.ansible.com/ansible/latest/modules/user_module.html#user-module)
-```
+```yml
 - name: Add the user 'johnd' with a specific uid and a primary group of 'admin'
   user:
     name: johnd
@@ -947,15 +948,24 @@ ansible oldboy -m service -a "name=crond state=started enabled=yes"
     create_home: no
     append: yes
 ```
-```
+```yml
 - name: Remove the user 'johnd'
   user:
     name: johnd
     state: absent
     remove: yes
 ```
-## group模块
+### 生成密码
 ```
+ansible all -i localhost, -m debug -a "msg={{ 'mypassword' | password_hash('sha512', 'mysecretsalt') }}"
+ansible all -i localhost, -m debug -a "msg={{ '123456' | password_hash('sha512', 'oldboy123') }}"
+```
+### 创建带密码的用户
+```
+ansible backup -m user -a 'name=Alex02 password="$6$oldgirl$kAUTXVC2z1agr1HlmpFe9abFhWKwJ1fNyg64F95U3rVumwQfqOuhV3YkyZU9.H79TChzIKn5epl5M18B199qV1"'
+```
+## group模块
+```yml
 - name: Ensure group "somegroup" exists
   group:
     name: somegroup
@@ -964,7 +974,7 @@ ansible oldboy -m service -a "name=crond state=started enabled=yes"
 ```
 ## archive模块
 [https://docs.ansible.com/ansible/latest/modules/archive_module.html#archive-module](https://docs.ansible.com/ansible/latest/modules/archive_module.html#archive-module)
-```
+```yml
 - name: Create a bz2 archive of a globbed path, while excluding a glob of dirnames
   archive:
     path:
@@ -974,7 +984,7 @@ ansible oldboy -m service -a "name=crond state=started enabled=yes"
     - /path/to/foo/ba*
     format: bz2
 ```
-```
+```yml
 - name: Create a zip archive of /path/to/foo
   archive:
     path: /path/to/foo
@@ -983,7 +993,7 @@ ansible oldboy -m service -a "name=crond state=started enabled=yes"
 ## unarchive模块
 [https://docs.ansible.com/ansible/latest/modules/unarchive_module.html#unarchive-module](https://docs.ansible.com/ansible/latest/modules/unarchive_module.html#unarchive-module)
  默认解压方式  /usr/bin/gtar  /usr/bin/unzip
-```
+```yml
 - name: Unarchive a file that is already on the remote machine
   unarchive:
     src: /tmp/foo.zip
@@ -997,12 +1007,12 @@ ansible oldboy -m service -a "name=crond state=started enabled=yes"
     remote_src: yes
 ```
 ## selinux模块
-```
+```yml
 - selinux:
     state: disabled
 ```
 ## synchronize模块
-```
+```yml
 # Synchronization of src on the control machine to dest on the remote hosts
 - synchronize:
     src: some/relative/path
@@ -1033,14 +1043,14 @@ ansible oldboy -m service -a "name=crond state=started enabled=yes"
 ssh-keygen -t dsa -P "" -f /root/.ssh/id_dsa &> /dev/null
 ansible oldboy -m authorized_key -a "user=oldboy key='{{ lookup('file', '/home/oldboy/.ssh/id_rsa.pub') }}'" -k
 ```
-```
+```yml
 - name: Set authorized key took from file
   authorized_key:
     user: charlie
     state: present
     key: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
 ```
-```
+```yml
 ---
 - hosts: nginx
   tasks:
@@ -1051,7 +1061,7 @@ ansible oldboy -m authorized_key -a "user=oldboy key='{{ lookup('file', 
       key: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
 ```
 cat authkey.yml
-```
+```yml
 ---
 - hosts:
   - nfs01
@@ -1065,7 +1075,7 @@ cat authkey.yml
 ...
 ```
 ## debug
-```
+```yml
 - debug:
     msg: "System {{ inventory_hostname }} has uuid {{ ansible_product_uuid }}"
 ```
@@ -1083,7 +1093,7 @@ host=172.16.1.7
 user=root
 password=123456
 ```
-```
+```yml
 - name: Create a new database with name 'bobdata'
   mysql_db:
     name: bobdata
@@ -1117,7 +1127,7 @@ state
   absent
   dump
   import
-```
+```yml
 ---
 - hosts: 172.16.1.7
   tasks:
@@ -1127,7 +1137,7 @@ state
       state: present
 ```
 ## mysql_user模块
-```
+```yml
 # Removes anonymous user account for localhost
 - mysql_user:
     name: ''
@@ -1218,7 +1228,7 @@ state
 # user=root
 # password=n<_665{vS43y
 ```
-```
+```yml
 ---
 - hosts: 172.16.1.7
   tasks:
@@ -1241,7 +1251,7 @@ host=172.16.1.7
 user=root
 password=123456
 ```
-```
+```yml
 ---
 - hosts: 172.16.1.7
   tasks:
@@ -1255,7 +1265,7 @@ password=123456
       state: present
 ```
 ## mysql_replication模块
-```
+```yml
 # Stop mysql slave thread
 - mysql_replication:
     mode: stopslave
@@ -2005,6 +2015,16 @@ tasks:
   debug:
     msg: "{{ item }}"
   loop: "{{ items|flatten(levels=1) }}"
+
+  - name: create backup directory
+    file:
+      path: '{{ item }}'
+      owner: rsync
+      group: rsync
+      state: directory
+    with_items:
+      - /backup
+      - /wuxing
 ```
 cat with_items.yml 
 ```yml
@@ -2132,7 +2152,7 @@ cat with_items.yml 
   tags: random
 ```
 # 剧本整合
-## 指令参数1
+## 指令参数1   roles
 ```yml
 - hosts:
   tasks:
@@ -2607,6 +2627,136 @@ drwxr-xr-x 6 root root    73 Jun 18 09:29 roles
     ├── nginx
     ├── rsync
     └── site.yml
+```
+# jinja
+[http://jinja.pocoo.org/](http://jinja.pocoo.org/)
+## 步骤1：编排目录如下
+```
+nginxconf.yml
+roles/nginxconf/
+├── tasks
+│   ├── file.yml
+│   └── main.yml
+├── templates
+│   └── nginx.conf.j2
+└── vars
+    └── main.yml
+```
+## 步骤2：编辑nginxconf role的tasks调度文件roles/nginxconf/tasks/{file.yml,main.yml}
+编辑file.yml，定义nginxconf role的一个功能集（一个文件一个功能集）。
+```yml
+---
+- name: nginx.conf.j2 tempalte transfer example
+  template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf.template
+```
+编辑main.yml，定义任务功能集合、nginxconf role功能集入口
+```yml
+---
+- include: file.yml
+```
+## 步骤3：这是最重要的一步，定义nginxconf role的模板文件roles/nginxconf/templates/nginx.conf.j2，该模板的灵活性将直接影响Ansible-playbook的代码行数和整体Playbook的灵活性健壮性，该模板文件将被替换变量后生成最终的Nginx配置文件
+```
+{% if nginx_use_proxy %}
+{% for proxy in nginx_proxies %}
+upstream {{ proxy.name }} {
+    # server 127.0.0.1:{{ proxy.port }};
+    server {{ ansible_eth0.ipv4.address }}:{{ proxy.port }};
+}
+{% endfor %}
+{% endif %}
+server {
+    listen 80;
+    server_name {{ nginx_server_name }};
+    access_log off;
+    error_log /dev/null crit;
+    rewrite ^ https:// $server_name$request_uri? permanent;
+}
+server {
+    listen 443 ssl;
+    server_name {{ nginx_server_name }};
+    ssl_certificate /etc/nginx/ssl/{{ nginx_ssl_cert_name }};
+    ssl_certificate_key /etc/nginx/ssl/{{ nginx_ssl_cert_key }};
+
+    root {{ nginx_web_root }};
+    index index.html index.html;
+
+{% if nginx_use_auth %}
+    auth_basic            "Restricted";
+    auth_basic_user_file  /etc/nginx/{{project_name}}.htpasswd;
+{% endif %}
+
+{% if nginx_use_proxy %}
+{% for proxy in nginx_proxies %}
+
+    location {{ proxy.location }} {
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Proto http;
+        proxy_set_header X-Url-Scheme $scheme;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-NginX-Proxy true;
+        proxy_redirect off;
+        proxy_pass http://{{ proxy.name }};
+        break;
+    }
+{% endfor %}
+{% endif %}
+
+{% if nginx_server_static %}
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+{% endif %}
+
+}
+```
+## 步骤4：编辑nginxconf role的变量文件roles/nginxconf/vars/main.yml
+```yml
+---
+nginx_server_name: www.wuxingge.com
+nginx_web_root: /opt/wuxingge/
+nginx_proxies:
+  - name: suspicious
+    location: /
+    port: 2368
+  - name: suspicious-api
+    location: /api
+    port: 3000
+```
+该变量文件需要关注的是**nginx_proxies**定义的变量组，其下的变量列表通过for循环读取后可以通过“. ”来引用，即如下proxy.name这样的引用方式
+```
+{% for proxy in nginx_proxies %}
+upstream {{ proxy.name }} {
+    # server 127.0.0.1:{{ proxy.port }};
+```
+## 步骤5：编辑总调度文件nginxconf.yml
+```yml
+- name: Nginx Proxy Server's Conf Dynamic Create
+    hosts: "192.168.37.130:192.168.37.158"
+    vars:
+      nginx_use_proxy: true
+      nginx_ssl_cert_name: ifa.crt
+      nginx_ssl_cert_key: ifa.key
+      nginx_use_auth: true
+      project_name: suspicious
+      nginx_server_static: true
+    gather_facts: true
+    roles:
+      - { role: nginxconf }
+
+- name: Nginx WebServer's Conf Dynamic Create
+    hosts: 192.168.37.159
+    vars:
+      nginx_use_proxy: false
+      nginx_ssl_cert_name: ifa.crt
+      nginx_ssl_cert_key: ifa.key
+      nginx_use_auth: false
+      project_name: suspicious
+      nginx_server_static: false
+    gather_facts: no
+    roles:
+      - { role: nginxconf }
 ```
 # Galaxy
 # Tower
